@@ -27,14 +27,14 @@ static VALUE eSSLError = Qnil;
 static VALUE eReadAgain = Qnil;
 static VALUE eWriteAgain = Qnil;
 
-static VALUE Rev_SSL_IO_connect_nonblock(VALUE self);
-static VALUE Rev_SSL_IO_accept_nonblock(VALUE self);
-static VALUE Rev_SSL_IO_ssl_setup(VALUE self);
-static VALUE Rev_SSL_IO_ssl_setup_check(VALUE dummy, VALUE error_info);
-static VALUE Rev_SSL_IO_start_ssl(VALUE self, int (*func)(), const char *funcname);
+static VALUE ossl_nonblock_connect_nonblock(VALUE self);
+static VALUE ossl_nonblock_accept_nonblock(VALUE self);
+static VALUE ossl_nonblock_ssl_setup(VALUE self);
+static VALUE ossl_nonblock_ssl_setup_check(VALUE dummy, VALUE error_info);
+static VALUE ossl_nonblock_start_ssl(VALUE self, int (*func)(), const char *funcname);
 
-static VALUE Rev_SSL_IO_read_nonblock(int argc, VALUE *argv, VALUE self);
-static VALUE Rev_SSL_IO_write_nonblock(VALUE self, VALUE str);
+static VALUE ossl_nonblock_read_nonblock(int argc, VALUE *argv, VALUE self);
+static VALUE ossl_nonblock_write_nonblock(VALUE self, VALUE str);
 
 /*
  * Time to monkey patch some C code!
@@ -88,17 +88,17 @@ void Init_nonblock_ext()
   eReadAgain = rb_define_class_under(mSSL, "ReadAgain", rb_eStandardError);
   eWriteAgain = rb_define_class_under(mSSL, "WriteAgain", rb_eStandardError);
 
-  rb_define_method(cSSLSocket, "connect_nonblock", Rev_SSL_IO_connect_nonblock, 0);
-  rb_define_method(cSSLSocket, "accept_nonblock", Rev_SSL_IO_accept_nonblock, 0);
+  rb_define_method(cSSLSocket, "connect_nonblock", ossl_nonblock_connect_nonblock, 0);
+  rb_define_method(cSSLSocket, "accept_nonblock", ossl_nonblock_accept_nonblock, 0);
   
-  rb_define_method(cSSLSocket, "read_nonblock", Rev_SSL_IO_read_nonblock, -1);
-  rb_define_method(cSSLSocket, "write_nonblock", Rev_SSL_IO_write_nonblock, 1);
+  rb_define_method(cSSLSocket, "read_nonblock", ossl_nonblock_read_nonblock, -1);
+  rb_define_method(cSSLSocket, "write_nonblock", ossl_nonblock_write_nonblock, 1);
 }
 
 #if RUBY_VERSION_CODE < 190 
 /* SSL initialization for Ruby 1.8 */
 static VALUE
-Rev_SSL_IO_ssl_setup(VALUE self)
+ossl_nonblock_ssl_setup(VALUE self)
 {
   VALUE io, v_ctx, cb;
   SSL_CTX *ctx;
@@ -137,7 +137,7 @@ Rev_SSL_IO_ssl_setup(VALUE self)
 #if RUBY_VERSION_CODE >= 190
 /* Slightly less insane SSL setup for Ruby 1.9 */
 static VALUE
-Rev_SSL_IO_ssl_setup(VALUE self)
+ossl_nonblock_ssl_setup(VALUE self)
 {
   /*
    * DANGER WILL ROBINSON!  CRAZY HACKS AHEAD!
@@ -173,45 +173,45 @@ Rev_SSL_IO_ssl_setup(VALUE self)
 /* Ensure the error raised by calling #session= with a dummy argument is 
  * the one we were expecting */
 static VALUE 
-Rev_SSL_IO_ssl_setup_check(VALUE dummy, VALUE err)
+ossl_nonblock_ssl_setup_check(VALUE dummy, VALUE err)
 {
   return Qnil;
 }
 
 /*
  * call-seq:
- *    ssl.connect => self
+ *    ssl.connect_nonblock => self
  */
 static VALUE
-Rev_SSL_IO_connect_nonblock(VALUE self)
+ossl_nonblock_connect_nonblock(VALUE self)
 {
 #if RUBY_VERSION_CODE >= 190
-  rb_rescue(Rev_SSL_IO_ssl_setup, self, Rev_SSL_IO_ssl_setup_check, Qnil);
+  rb_rescue(ossl_nonblock_ssl_setup, self, ossl_nonblock_ssl_setup_check, Qnil);
 #else
-  Rev_SSL_IO_ssl_setup(self);
+  ossl_nonblock_ssl_setup(self);
 #endif
   
-  return Rev_SSL_IO_start_ssl(self, SSL_connect, "SSL_connect");
+  return ossl_nonblock_start_ssl(self, SSL_connect, "SSL_connect");
 }
 
 /*
  * call-seq:
- *    ssl.accept => self
+ *    ssl.accept_nonblock => self
  */
 static VALUE
-Rev_SSL_IO_accept_nonblock(VALUE self)
+ossl_nonblock_accept_nonblock(VALUE self)
 {
 #if RUBY_VERSION_CODE >= 190
-  rb_rescue(Rev_SSL_IO_ssl_setup, self, 0, 0);
+  rb_rescue(ossl_nonblock_ssl_setup, self, 0, 0);
 #else
-  Rev_SSL_IO_ssl_setup(self);
+  ossl_nonblock_ssl_setup(self);
 #endif
 
-  return Rev_SSL_IO_start_ssl(self, SSL_accept, "SSL_accept");
+  return ossl_nonblock_start_ssl(self, SSL_accept, "SSL_accept");
 }
 
 static VALUE
-Rev_SSL_IO_start_ssl(VALUE self, int (*func)(), const char *funcname)
+ossl_nonblock_start_ssl(VALUE self, int (*func)(), const char *funcname)
 {
   SSL *ssl;
   int ret, ret2;
@@ -251,7 +251,7 @@ Rev_SSL_IO_start_ssl(VALUE self, int (*func)(), const char *funcname)
  * * +buffer+ is a string used to store the result.
  */
 static VALUE
-Rev_SSL_IO_read_nonblock(int argc, VALUE *argv, VALUE self)
+ossl_nonblock_read_nonblock(int argc, VALUE *argv, VALUE self)
 {
   SSL *ssl;
   int ilen, nread = 0;
@@ -304,7 +304,7 @@ end:
  *    ssl.write_nonblock(string) => integer
  */
 static VALUE
-Rev_SSL_IO_write_nonblock(VALUE self, VALUE str)
+ossl_nonblock_write_nonblock(VALUE self, VALUE str)
 {
   SSL *ssl;
   int nwrite = 0;
