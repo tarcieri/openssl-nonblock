@@ -24,9 +24,6 @@ static VALUE mSSL = Qnil;
 static VALUE cSSLSocket = Qnil;
 static VALUE eSSLError = Qnil;
 
-static VALUE mRev = Qnil;
-static VALUE mRev_SSL = Qnil;
-
 static VALUE eRev_SSL_IO_ReadAgain = Qnil;
 static VALUE eRev_SSL_IO_WriteAgain = Qnil;
 
@@ -86,12 +83,10 @@ void Init_nonblock_ext()
   cSSLSocket = rb_define_class_under(mSSL, "SSLSocket", rb_cObject);
   eSSLError = rb_define_class_under(mSSL, "SSLError", eOSSLError);
 
-  mRev = rb_define_module("Rev");
-  mRev_SSL = rb_define_module_under(mRev, "SSL");
-  cSSLSocket = rb_define_class_under(mRev_SSL, "IO", cSSLSocket);
+  cSSLSocket = rb_define_class_under(mSSL, "SSLSocket", cSSLSocket);
 
-  eRev_SSL_IO_ReadAgain = rb_define_class_under(cSSLSocket, "ReadAgain", rb_eStandardError);
-  eRev_SSL_IO_WriteAgain = rb_define_class_under(cSSLSocket, "WriteAgain", rb_eStandardError);
+  eRev_SSL_IO_ReadAgain = rb_define_class_under(mSSL, "ReadAgain", rb_eStandardError);
+  eRev_SSL_IO_WriteAgain = rb_define_class_under(mSSL, "WriteAgain", rb_eStandardError);
 
   rb_define_method(cSSLSocket, "connect_nonblock", Rev_SSL_IO_connect_nonblock, 0);
   rb_define_method(cSSLSocket, "accept_nonblock", Rev_SSL_IO_accept_nonblock, 0);
