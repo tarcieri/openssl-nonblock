@@ -1,6 +1,6 @@
 /*
  * Ruby OpenSSL C extension with non-blocking I/O support
- * Copyright (C) 2008 Tony Arcieri
+ * Copyright (C) 2008-09 Tony Arcieri
  *
  * Includes portions from the 'OpenSSL for Ruby' project
  * Copyright (C) 2000-2002  GOTOU Yuuzou <gotoyuzo@notwork.org>
