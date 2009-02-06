@@ -24,8 +24,8 @@ static VALUE mSSL = Qnil;
 static VALUE cSSLSocket = Qnil;
 static VALUE eSSLError = Qnil;
 
-static VALUE eRev_SSL_IO_ReadAgain = Qnil;
-static VALUE eRev_SSL_IO_WriteAgain = Qnil;
+static VALUE eReadAgain = Qnil;
+static VALUE eWriteAgain = Qnil;
 
 static VALUE Rev_SSL_IO_connect_nonblock(VALUE self);
 static VALUE Rev_SSL_IO_accept_nonblock(VALUE self);
@@ -85,8 +85,8 @@ void Init_nonblock_ext()
 
   cSSLSocket = rb_define_class_under(mSSL, "SSLSocket", cSSLSocket);
 
-  eRev_SSL_IO_ReadAgain = rb_define_class_under(mSSL, "ReadAgain", rb_eStandardError);
-  eRev_SSL_IO_WriteAgain = rb_define_class_under(mSSL, "WriteAgain", rb_eStandardError);
+  eReadAgain = rb_define_class_under(mSSL, "ReadAgain", rb_eStandardError);
+  eWriteAgain = rb_define_class_under(mSSL, "WriteAgain", rb_eStandardError);
 
   rb_define_method(cSSLSocket, "connect_nonblock", Rev_SSL_IO_connect_nonblock, 0);
   rb_define_method(cSSLSocket, "accept_nonblock", Rev_SSL_IO_accept_nonblock, 0);
@@ -223,9 +223,9 @@ Rev_SSL_IO_start_ssl(VALUE self, int (*func)(), const char *funcname)
   if((ret = func(ssl)) <= 0) {
     switch((ret2 = SSL_get_error(ssl, ret))) {
     case SSL_ERROR_WANT_WRITE:
-      rb_raise(eRev_SSL_IO_WriteAgain, "write again");
+      rb_raise(eWriteAgain, "write again");
     case SSL_ERROR_WANT_READ:
-      rb_raise(eRev_SSL_IO_ReadAgain, "read again");
+      rb_raise(eReadAgain, "read again");
     case SSL_ERROR_SYSCALL:
       if (errno) rb_sys_fail(funcname);
       rb_raise(eSSLError, "%s SYSCALL returned=%d errno=%d state=%s", 
@@ -280,9 +280,9 @@ Rev_SSL_IO_read_nonblock(int argc, VALUE *argv, VALUE self)
     case SSL_ERROR_ZERO_RETURN:
       rb_eof_error();
     case SSL_ERROR_WANT_WRITE:
-      rb_raise(eRev_SSL_IO_WriteAgain, "write again");
+      rb_raise(eWriteAgain, "write again");
     case SSL_ERROR_WANT_READ:
-      rb_raise(eRev_SSL_IO_ReadAgain, "read again");
+      rb_raise(eReadAgain, "read again");
     case SSL_ERROR_SYSCALL:
       if(ERR_peek_error() == 0 && nread == 0) rb_eof_error();
       rb_sys_fail(0);
@@ -318,9 +318,9 @@ Rev_SSL_IO_write_nonblock(VALUE self, VALUE str)
     case SSL_ERROR_NONE:
       goto end;
     case SSL_ERROR_WANT_WRITE:
-      rb_raise(eRev_SSL_IO_WriteAgain, "write again");
+      rb_raise(eWriteAgain, "write again");
     case SSL_ERROR_WANT_READ:
-      rb_raise(eRev_SSL_IO_ReadAgain, "read again");
+      rb_raise(eReadAgain, "read again");
     case SSL_ERROR_SYSCALL:
       if (errno) rb_sys_fail(0);
     default:
