@@ -6,4 +6,4 @@ Dir['tasks/**/*.rake'].each { |task| load task }
 task :default => :compile
 
 CLEAN.include ["**/*.o", "**/*.log", "pkg"]
-CLEAN.include ["ext/Makefile", "**/*nonblock.#{Config::CONFIG['DLEXT']}"]
+CLEAN.include ["ext/Makefile", "**/*nonblock*.#{Config::CONFIG['DLEXT']}"]
