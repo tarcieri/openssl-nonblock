@@ -83,8 +83,6 @@ void Init_nonblock_ext()
   cSSLSocket = rb_define_class_under(mSSL, "SSLSocket", rb_cObject);
   eSSLError = rb_define_class_under(mSSL, "SSLError", eOSSLError);
 
-  cSSLSocket = rb_define_class_under(mSSL, "SSLSocket", cSSLSocket);
-
   eReadAgain = rb_define_class_under(mSSL, "ReadAgain", rb_eStandardError);
   eWriteAgain = rb_define_class_under(mSSL, "WriteAgain", rb_eStandardError);
 
