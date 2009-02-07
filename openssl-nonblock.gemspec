@@ -18,5 +18,5 @@ GEMSPEC = Gem::Specification.new do |s|
   s.rubyforge_project = "rev"
 
   # Extensions
-  s.extensions = FileList["ext/**/extconf.rb"].to_a
+  s.extensions = %w[ext/extconf.rb]
 end

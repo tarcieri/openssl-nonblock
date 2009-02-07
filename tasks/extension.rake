@@ -16,5 +16,5 @@ end
 
 file ext_so => ext_files do
   Dir.chdir('ext') { sh 'make' }
-  cp ext_so, "lib/openssl/nonblock_ext.#{Config::CONFIG['DLEXT']}"
+  cp ext_so, "lib/openssl_nonblock.#{Config::CONFIG['DLEXT']}"
 end

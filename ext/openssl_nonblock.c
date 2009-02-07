@@ -74,7 +74,7 @@ static void rb_str_set_len(VALUE str, long len)
 }
 #endif /* HAVE_RB_STR_SET_LEN */
 
-void Init_nonblock_ext()
+void Init_openssl_nonblock()
 {
   mOSSL = rb_define_module("OpenSSL");
   eOSSLError = rb_define_class_under(mOSSL, "OpenSSLError", rb_eStandardError);
