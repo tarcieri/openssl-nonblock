@@ -22,8 +22,8 @@ h2. Additional methods
 The openssl-nonblock gem adds four new methods to the OpenSSL::SSL::SSLSocket
 class.  These methods are:
 
-* connect_nonblock(io): connect to an SSL server over the given Ruby IO object
-* accept_nonblock(io): accept an SSL connection over the given Ruby IO object
+* connect_nonblock: connect to an SSL server
+* accept_nonblock: accept an SSL connection
 * read_nonblock(length): read up to the given length, but don't block
 * write_nonblock(data): write as much of the given data as possible without blocking
 
