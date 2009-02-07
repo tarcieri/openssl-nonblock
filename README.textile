@@ -22,7 +22,7 @@ Alternatively, you may build it from the git repo.  Run:
 
 to build a gem in the package directory, then:
 
- gem install pkg/openssl-nonblock-X.X.X.gem
+ gem install pkg/openssl-nonblock-X.Y.Z.gem
 
 to install it.
 
