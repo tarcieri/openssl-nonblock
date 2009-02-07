@@ -8,6 +8,24 @@ there's no reason you can't have these methods today.
 With a bit of crazy C hackery, this module will patch existing versions of
 Ruby, including 1.8.6, 1.8.7, and 1.9.1 to include non-blocking SSL support.
 
+h2. Installation
+
+openssl-nonblock is installable as a gem.  Just run:
+
+ gem install openssl-nonblock
+
+to install it.
+
+Alternatively, you may build it from the git repo.  Run:
+
+ rake gem
+
+to build a gem in the package directory, then:
+
+ gem install pkg/openssl-nonblock-X.X.X.gem
+
+to install it.
+
 h2. Usage
 
 Once the openssl-nonblock gem has been installed, use:
