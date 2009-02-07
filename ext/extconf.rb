@@ -4,8 +4,10 @@ dir_config("openssl_nonblock")
 have_library("c", "main")
 
 if have_header('openssl/ssl.h')
-  $defs << '-DHAVE_OPENSSL_SSL_H'
   $LIBS << '-lssl -lcrypto'
+else
+  STDERR.puts("*** Error: OpenSSL header files are required to build openssl-nonblock")
+  exit 1
 end
 
 if have_func('rb_str_set_len')
