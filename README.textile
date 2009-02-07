@@ -1,0 +1,59 @@
+h1. openssl-nonblock
+
+Ruby recently added a bunch of non-blocking operations to its core socket
+classes, like connect_nonblock, read_nonblock, etc.  There are plans to add
+similar methods to the SSL library of future versions of Ruby.  However, 
+there's no reason you can't have these methods today.
+
+With a bit of crazy C hackery, this module will patch existing versions of
+Ruby, including 1.8.6, 1.8.7, and 1.9.1 to include non-blocking SSL support.
+
+h2. Usage
+
+Once the openssl-nonblock gem has been installed, use:
+
+ require 'openssl/nonblock'
+ 
+to include non-blocking SSL support in your program.  This will also pull in
+the 'openssl' library if you haven't required it already.
+
+h2. Additional methods
+
+The openssl-nonblock gem adds four new methods to the OpenSSL::SSL::SSLSocket
+class.  These methods are:
+
+* connect_nonblock(io): connect to an SSL server over the given Ruby IO object
+* accept_nonblock(io): accept an SSL connection over the given Ruby IO object
+* read_nonblock(length): read up to the given length, but don't block
+* write_nonblock(data): write as much of the given data as possible without blocking
+
+h2. Exceptions
+
+The openssl-nonblock adds two new exception objects which are needed for 
+correct I/O behavior when using this module.  Any of the *_nonblock versions
+of the SSL methods added by this module will require proper handling of these
+exceptions:
+
+* OpenSSL::SSL::ReadAgain: this means OpenSSL needs to read more data to 
+  complete the given request.  You should wait until the underlying IO object
+  becomes readable again before retrying the request.
+* OpenSSL::SSL::WriteAgain: similar to above, except OpenSSL is trying to write
+  data to the IO object, and the IO object is not presently writable.  You 
+  should wait until the object becomes writable again before retrying the request.
+  
+h2. Possible compatibility problems
+
+ruby-core is officially trying to add nonblocking SSL support, however at the
+present time it is insufficient for full non-blocking SSL support.  Please be
+aware that this extension may conflict with future versions of Ruby.
+
+h2. Problems?
+
+openssl-nonblock is a subcomponent of Rev, an event library for Ruby.  Please
+address any questions about openssl-ruby to the rev-talk mailing list at:
+
+"http://rubyforge.org/mailman/listinfo/rev-talk":http://rubyforge.org/mailman/listinfo/rev-talk
+
+Additional information about Rev is available at:
+
+"http://rev.rubyforge.org":http://rev.rubyforge.org
