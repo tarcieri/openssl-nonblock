@@ -4,7 +4,7 @@ dir_config("openssl_nonblock")
 have_library("c", "main")
 
 if have_header('openssl/ssl.h')
-  $LIBS << '-lssl -lcrypto'
+  $LIBS << ' -lssl -lcrypto'
 else
   STDERR.puts("*** Error: OpenSSL header files are required to build openssl-nonblock")
   exit 1
