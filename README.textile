@@ -1,9 +1,8 @@
 h1. openssl-nonblock
 
-Ruby recently added a bunch of non-blocking operations to its core socket
-classes, like connect_nonblock, read_nonblock, etc.  There are plans to add
-similar methods to the SSL library of future versions of Ruby.  However, 
-there's no reason you can't have these methods today.
+Ruby 1.9.2 added non-blocking counterparts to its core OpenSSL methods, 
+including connect_nonblock, read_nonblock, etc.  However, there's no reason 
+you can't have these methods today on any recent version of Ruby.
 
 With a bit of crazy C hackery, this module will patch existing versions of
 Ruby, including 1.8.6, 1.8.7, and 1.9.1 to include non-blocking SSL support.
@@ -47,23 +46,16 @@ class.  These methods are:
 
 h2. Exceptions
 
-The openssl-nonblock adds two new exception objects which are needed for 
-correct I/O behavior when using this module.  Any of the *_nonblock versions
-of the SSL methods added by this module will require proper handling of these
-exceptions:
+openssl-nonblock raises one of two exceptions when it would otherwise need to 
+block.  These exceptions are raised from any of the nonblocking methods that 
+openssl-nonblock adds and need to be properly handled:
 
-* OpenSSL::SSL::ReadAgain: this means OpenSSL needs to read more data to 
-  complete the given request.  You should wait until the underlying IO object
-  becomes readable again before retrying the request.
-* OpenSSL::SSL::WriteAgain: similar to above, except OpenSSL is trying to write
-  data to the IO object, and the IO object is not presently writable.  You 
-  should wait until the object becomes writable again before retrying the request.
-  
-h2. Possible compatibility problems
-
-ruby-core is officially trying to add nonblocking SSL support, however at the
-present time it is insufficient for full non-blocking SSL support.  Please be
-aware that this extension may conflict with future versions of Ruby.
+* IO::WaitReadable: this means OpenSSL needs to read more data to complete the 
+  given request.  You should wait until the underlying IO object becomes 
+  readable again before retrying the request.
+* IO::WaitWritable similar to above, except OpenSSL is trying to write data to
+  the IO object, and the IO object is not presently writable.  You should wait
+  until the object becomes writable again before retrying the request.
 
 h2. Problems?
 
