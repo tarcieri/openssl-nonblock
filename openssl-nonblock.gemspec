@@ -2,10 +2,10 @@ require 'rubygems'
 
 GEMSPEC = Gem::Specification.new do |s|
   s.name = "openssl-nonblock"
-  s.version = "0.2.0"
+  s.version = "0.2.1"
   s.authors = "Tony Arcieri"
   s.email = "tony@medioh.com"
-  s.date = "2009-03-09"
+  s.date = "2009-12-15"
   s.summary = "Non-blocking support for Ruby OpenSSL"
   s.platform = Gem::Platform::RUBY
   s.required_ruby_version = '>= 1.8.6'
