@@ -10,6 +10,12 @@
  * See LICENSE for details
  */
 
+/* 
+  Ruby 1.9.2 theoretically includes all this natively, so kill the entire C 
+  extension if we're running 1.9.2+
+*/
+#if RUBY_VERSION_CODE < 192
+
 #include "ruby.h"
 #include "rubyio.h"
 
@@ -339,3 +345,5 @@ ossl_nonblock_write_nonblock(VALUE self, VALUE str)
 end:
   return INT2NUM(nwrite);
 }
+
+#endif /* RUBY_VERSION_CODE < 192 */
