@@ -15,12 +15,17 @@
 
 #include <openssl/ssl.h>
 
+extern VALUE rb_cIO;
+
 static VALUE mOSSL = Qnil;
 static VALUE eOSSLError = Qnil;
 
 static VALUE mSSL = Qnil;
 static VALUE cSSLSocket = Qnil;
 static VALUE eSSLError = Qnil;
+
+static VALUE mWaitReadable = Qnil;
+static VALUE mWaitWritable = Qnil;
 
 static VALUE eReadAgain = Qnil;
 static VALUE eWriteAgain = Qnil;
@@ -81,8 +86,14 @@ void Init_openssl_nonblock()
   cSSLSocket = rb_define_class_under(mSSL, "SSLSocket", rb_cObject);
   eSSLError = rb_define_class_under(mSSL, "SSLError", eOSSLError);
 
+  mWaitReadable = rb_define_module_under(rb_cIO, "WaitReadable");
+  mWaitWritable = rb_define_module_under(rb_cIO, "WaitWritable");
+
   eReadAgain = rb_define_class_under(mSSL, "ReadAgain", rb_eStandardError);
+  rb_include_module(eReadAgain, mWaitReadable);
+
   eWriteAgain = rb_define_class_under(mSSL, "WriteAgain", rb_eStandardError);
+  rb_include_module(eWriteAgain, mWaitWritable);
 
   rb_define_method(cSSLSocket, "connect_nonblock", ossl_nonblock_connect_nonblock, 0);
   rb_define_method(cSSLSocket, "accept_nonblock", ossl_nonblock_accept_nonblock, 0);
